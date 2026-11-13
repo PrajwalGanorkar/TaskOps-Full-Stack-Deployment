@@ -1,24 +1,38 @@
+name: taskops
+
 services:
   backend:
+    image: ${DOCKERHUB_USER:-local}/taskops-backend:${IMAGE_TAG:-latest}
     build: ./backend
+    restart: unless-stopped
     environment:
-      DEBUG: "False"
-      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-local-demo-secret-change-me}
-      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+      DEBUG: ${DEBUG:-False}
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY is not set, copy .env.example to .env}"
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
     volumes:
       - taskops_data:/app/data
-    command: sh -c "mkdir -p /app/data && DB_PATH=/app/data/db.sqlite3 python manage.py migrate --run-syncdb && DB_PATH=/app/data/db.sqlite3 gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2"
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/')"]
       interval: 15s
       timeout: 5s
       retries: 5
+      start_period: 10s
+
   frontend:
+    image: ${DOCKERHUB_USER:-local}/taskops-frontend:${IMAGE_TAG:-latest}
     build: ./frontend
+    restart: unless-stopped
+    environment:
+      API_URL: ${API_URL:-http://backend:8000}
     ports:
-      - "80:80"
+      - "${HTTP_PORT:-80}:8080"
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       backend:
         condition: service_healthy
+
 volumes:
   taskops_data:

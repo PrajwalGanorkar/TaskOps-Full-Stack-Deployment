@@ -9,13 +9,14 @@ TaskOps is a practical full-stack engineering operations dashboard. It lets a sm
 - Metrics endpoint for total, backlog, in-progress, blocked and completed work
 - SQLite persistence using a Docker named volume
 - Docker Compose orchestration; Nginx serves the SPA and reverse proxies `/api`
-- GitHub Actions backend test + frontend build checks
-- Jenkins pipeline for container build and compose validation
-- Optional AWS EC2 provisioning with Terraform
+- Jenkins pipeline: validate → build → test → push to Docker Hub → deploy (on every push to `main`)
+- GitHub Actions: tests, frontend build, Docker Hub publish
+- Multi-stage, non-root Docker images
+- AWS EC2 provisioning with Terraform (security group: 80, 443, 22)
 
 ## Run locally with Docker
 ```bash
-cp .env.example .env
+cp .env.example .env      # then set a real DJANGO_SECRET_KEY
 docker compose up --build -d
 docker compose ps
 ```
@@ -50,3 +51,6 @@ screenshots/             Evidence capture folder
 
 ## Before public deployment
 Set a strong `DJANGO_SECRET_KEY`, restrict SSH CIDR, configure HTTPS with a domain and TLS certificate, and use managed database/backups for production. This assessment build is a demo deployment, not a hardened multi-user production system.
+
+## Assumptions
+Docker Hub is the registry; Jenkins is self-hosted with Docker access; SQLite on a named volume is enough for this demo; HTTPS port 443 is opened but no certificate is installed (no domain assumed); SSH is limited to the admin IP. Full list and setup steps: see [DEVOPS.md](DEVOPS.md).

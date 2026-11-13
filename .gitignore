@@ -9,3 +9,6 @@ backend/db.sqlite3
 frontend/node_modules/
 frontend/dist/
 .DS_Store
+
+terraform.tfvars
+.terraform.lock.hcl.bak
