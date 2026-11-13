@@ -1,0 +1,24 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      DEBUG: "False"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-local-demo-secret-change-me}
+      ALLOWED_HOSTS: localhost,127.0.0.1,backend
+    volumes:
+      - taskops_data:/app/data
+    command: sh -c "mkdir -p /app/data && DB_PATH=/app/data/db.sqlite3 python manage.py migrate --run-syncdb && DB_PATH=/app/data/db.sqlite3 gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+volumes:
+  taskops_data:
