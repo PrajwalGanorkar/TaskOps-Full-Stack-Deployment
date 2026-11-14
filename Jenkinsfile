@@ -14,9 +14,10 @@ pipeline {
     }
 
     environment {
-        DOCKERHUB = credentials('dockerhub-creds')
-        IMAGE_TAG = "${BUILD_NUMBER}"
-        COMPOSE_ENV = '--env-file .env.example'
+    DOCKERHUB = credentials('dockerhub-creds')
+    DJANGO_SECRET_KEY = credentials('django-secret-key')
+    IMAGE_TAG = "${BUILD_NUMBER}"
+    COMPOSE_ENV = '--env-file .env.example'
     }
 
     stages {

@@ -22,7 +22,7 @@ docker compose up -d --remove-orphans
 
 echo ">> Waiting for the app to become healthy"
 i=0
-until docker compose exec -T frontend wget -qO- http://127.0.0.1:8080/api/health/ >/dev/null 2>&1; do
+until docker compose exec -T backend python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/', timeout=5)" >/dev/null 2>&1; do
   i=$((i+1))
   if [ "$i" -ge 30 ]; then
     echo "!! Health check failed after 2 minutes. Recent logs:"
