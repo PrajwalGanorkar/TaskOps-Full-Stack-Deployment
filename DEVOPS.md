@@ -7,7 +7,7 @@
 |---|---|
 | GitHub repository | https://github.com/PrajwalGanorkar/TaskOps-Full-Stack-Deployment |
 | Deployed application | Not deployed to public cloud (Local: http://localhost) |
-| Screenshots / evidence (Drive) | ADD_YOUR_GOOGLE_DRIVE_LINK_HERE |
+| Screenshots / evidence (Drive) | https://drive.google.com/drive/folders/1ylxuBAlv4oDnbCvP70GylxtudGPnsGY1?usp=sharing |
 
 ---
 
@@ -115,7 +115,7 @@ terraform output application_url
 
 First deploy to the server (or just push to `main` and let Jenkins/Actions do it):
 ```bash
-scp -i <key>.pem docker-compose.yml scripts/deploy.sh ubuntu@<EC2_IP>:~/taskops/
+scp -i <key>.pem ../docker-compose.yml ../scripts/deploy.sh ubuntu@<EC2_IP>:~/taskops/
 ssh -i <key>.pem ubuntu@<EC2_IP> "cd ~/taskops && DOCKERHUB_USER=<you> IMAGE_TAG=latest sh deploy.sh"
 ```
 Open `http://<EC2_IP>` and `http://<EC2_IP>/api/health/`. Remove everything with `terraform destroy`.
